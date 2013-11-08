@@ -7,7 +7,7 @@ MAINTAINERCLEANFILES = 			\
 	config.h.in			\
 	config.sub			\
 	depcomp				\
-	gnome-code-assistance.doap	\
+	gedit-code-assistance.doap	\
 	gtk-doc.make			\
 	install-sh			\
 	ltmain.sh			\
