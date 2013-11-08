@@ -1,14 +1,13 @@
-SUBDIRS = data src vapi backends
-
 ACLOCAL_AMFLAGS = -I m4
 
 MAINTAINERCLEANFILES = 			\
+	INSTALL				\
 	aclocal.m4			\
 	config.guess			\
 	config.h.in			\
 	config.sub			\
 	depcomp				\
-	gedit-code-assistance.doap	\
+	gnome-code-assistance.doap	\
 	gtk-doc.make			\
 	install-sh			\
 	ltmain.sh			\
@@ -23,7 +22,24 @@ MAINTAINERCLEANFILES = 			\
 	m4/lt~obsolete.m4		\
 	`find "$(srcdir)" -type f -name Makefile.in -print`
 
-dist-hook:
+CLEANFILES =
+EXTRA_DIST =
+GITIGNOREFILES =
+GITIGNOREDEPS =
+BUILT_SOURCES =
+DISTCLEANFILES =
+gsettings_SCHEMAS =
+
+geditcodeassistancedatadir = $(GEDIT_DATA_DIR)/codeassistance
+geditcodeassistanceplugindir = $(GEDIT_PLUGIN_DIR)
+
+include data/Makefile.am
+include src/Makefile.am
+include vapi/Makefile.am
+
+@GSETTINGS_RULES@
+
+dist-hook-changelog:
 	@if test -d "$(srcdir)/.git"; \
 	then \
 		echo Creating ChangeLog && \
@@ -36,5 +52,10 @@ dist-hook:
 	else \
 		echo A git clone is required to generate a ChangeLog >&2; \
 	fi
+
+dist-hook-built-sources:
+	cd $(distdir); rm -f $(BUILT_SOURCES)
+
+dist-hook: dist-hook-changelog dist-hook-built-sources
 
 -include $(top_srcdir)/git.mk

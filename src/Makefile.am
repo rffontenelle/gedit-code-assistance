@@ -1,101 +1,75 @@
-INCLUDES =				\
-	-I$(srcdir)			\
-	-I$(top_srcdir)			\
-	-DDATADIR=\""$(datadir)"\"
+geditcodeassistanceplugin_LTLIBRARIES = src/libcodeassistance.la
 
-plugindir = $(GEDIT_PLUGIN_DIR)
-plugin_LTLIBRARIES = libgcp.la
+gedit_plugin_vala_sources =					\
+	src/gca-plugin.vala					\
+	src/gca-app-activatable.vala				\
+	src/gca-view-activatable.vala				\
+	src/gca-source-location.vala				\
+	src/gca-source-range.vala				\
+	src/gca-source-range-support.vala			\
+	src/gca-expand-range.vala				\
+	src/gca-source-index.vala				\
+	src/gca-view.vala					\
+	src/gca-document.vala					\
+	src/gca-scrollbar-marker.vala				\
+	src/gca-backend.vala					\
+	src/gca-backend-manager.vala				\
+	src/gca-unsaved-file.vala				\
+	src/gca-semantic-value.vala				\
+	src/gca-semantic-value-support.vala			\
+	src/gca-symbol-browser.vala				\
+	src/gca-symbol-browser-support.vala			\
+	src/gca-diagnostic.vala					\
+	src/gca-diagnostics.vala				\
+	src/gca-diagnostic-colors.vala				\
+	src/gca-diagnostic-tags.vala				\
+	src/gca-diagnostic-message.vala				\
+	src/gca-dbus.vala					\
+	src/gca-remote-service.vala				\
+	src/gca-log.vala
 
-vala_sources = \
-	gcp.vala \
-	gcp-plugin.vala \
-	gcp-app-activatable.vala \
-	gcp-view-activatable.vala \
-	gcp-source-location.vala \
-	gcp-source-range.vala \
-	gcp-expand-range.vala \
-	gcp-source-range-support.vala \
-	gcp-source-index.vala \
-	gcp-view.vala \
-	gcp-document.vala \
-	gcp-scrollbar-marker.vala \
-	gcp-backend.vala \
-	gcp-backend-implementation.vala \
-	gcp-backend-manager.vala \
-	gcp-unsaved-file.vala \
-	gcp-semantic-value.vala \
-	gcp-semantic-value-support.vala \
-	gcp-symbol-browser.vala \
-	gcp-symbol-browser-support.vala \
-	gcp-diagnostic.vala \
-	gcp-diagnostic-colors.vala \
-	gcp-diagnostic-tags.vala \
-	gcp-diagnostic-support.vala \
-	gcp-diagnostic-message.vala \
-	gcp-log.vala
+gedit_plugin_libcodeassistance_NOINSTHFILES =			\
+	src/gca-utils-c.h
 
-SOURCES = \
-	$(vala_sources) \
-	gcp-utils-c.c
+BUILT_SOURCES +=						\
+	src/libcodeassistance.vapi				\
+	$(srcdir)/src_libcodeassistance_la_vala.stamp
 
-BUILT_SOURCES = \
-	gcp.vapi \
-	gcp.h
+EXTRA_DIST += $(gedit_plugin_libcodeassistance_NOINSTHFILES)
 
-NOINSTHFILES = \
-	gcp-utils-c.h
+src_libcodeassistance_la_SOURCES =		\
+	$(gedit_plugin_vala_sources)				\
+	src/gca-utils-c.c
 
-EXTRA_DIST = $(NOINSTHFILES)
+src_libcodeassistance_la_VALAFLAGS =		\
+	--vapidir $(builddir)/vapi				\
+	--vapi src/libcodeassistance.vapi			\
+	--library libcodeassistance				\
+	--pkg gio-unix-2.0					\
+	--pkg gee-0.8						\
+	--pkg gca-utils						\
+	--pkg gedit						\
+	--pkg libpeas-1.0					\
+	--target-glib=2.36					\
+	--thread
 
-libgcp_la_SOURCES = $(SOURCES)
+if ENABLE_DEBUG
+src_libcodeassistance_la_VALAFLAGS += --debug
+endif
 
-libgcp_la_VALAFLAGS = \
-	--vapidir $(top_srcdir)/vapi \
-	--header gcp.h \
-	--vapi gcp.vapi \
-	--library libgcp \
-	--gir Gcp-3.0.gir \
-	--pkg gio-2.0 \
-	--pkg gee-1.0 \
-	--pkg gcp-utils \
-	--pkg gtk+-3.0 \
-	--pkg gtksourceview-3.0 \
-	--pkg gedit-3.0 \
-	--pkg libpeas-1.0 \
-	--pkg gobject-introspection-1.0 \
-	--pkg posix \
-	--pkg config
+src_libcodeassistance_la_CFLAGS = $(GEDIT_CFLAGS) -I$(top_srcdir) -w
+src_libcodeassistance_la_LDFLAGS = -module -shared -avoid-version $(GEDIT_LIBS)
 
-libgcp_la_CFLAGS = $(GCP_CFLAGS) $(GEDIT_CFLAGS) -I$(top_srcdir) -w
-libgcp_la_LDFLAGS = -module -shared -avoid-version $(GCP_LIBS) $(GEDIT_LIBS)
+CLEANFILES += 							\
+	$(gedit_plugin_vala_sources:.vala=.c)			\
+	src_libcodeassistance_la_vala.stamp
 
-INTROSPECTION_COMPILER_ARGS = --includedir $(GEDIT_GIR_DIR)
+GITIGNOREFILES +=						\
+	src/libcodeassistance.vapi				\
+	src/$(DEPDIR)						\
+	src/*.lo						\
+	src/*.o							\
+	src/.libs						\
+	src/.dirstamp
 
--include $(INTROSPECTION_MAKEFILE)
-
-girdir = $(GCP_DATA_DIR)/gir-1.0
-dist_gir_DATA = Gcp-3.0.gir
-
-typelibdir = $(GCP_LIBS_DIR)/girepository-1.0
-dist_typelib_DATA = $(dist_gir_DATA:.gir=.typelib)
-
-vapidir = $(datadir)/vala/vapi
-dist_vapi_DATA = 	\
-	gcp.vapi	\
-	gcp.deps
-
-CLEANFILES = 				\
-	libgcp_la_vala.stamp
-
-MAINTAINERCLEANFILES = 		\
-	$(dist_gir_DATA)	\
-	$(dist_typelib_DATA)	\
-	$(BUILT_SOURCES)
-
-gcphdir = $(prefix)/include/gedit-$(GEDIT_API_VERSION)/gcp
-gcph_HEADERS = gcp.h
-
-GITIGNOREFILES =			\
-	$(vala_sources:.vala=.c)
-
--include $(top_srcdir)/git.mk
+GITIGNOREDEPS += src/Makefile.am
