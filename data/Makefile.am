@@ -10,6 +10,6 @@ EXTRA_DIST += \
 CLEANFILES += $(geditcodeassistance_SCHEMAS)
 DISTCLEANFILES += $(geditcodeassistance_SCHEMAS)
 
-MAINTAINERCLEANFILES += $(geditcodeassistance_SCHEMAS:.xml=.valid)
+MAINTAINERCLEANFILES += $(gsettings_SCHEMAS:.xml=.valid)
 
 GITIGNOREDEPS += data/Makefile.am
