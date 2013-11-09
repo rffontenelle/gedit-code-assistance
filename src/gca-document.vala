@@ -37,6 +37,8 @@ public class Document : Object
 	public signal void location_changed(File? previous_location);
 	public signal void changed();
 
+	private static bool s_needs_tmp_chmod = true;
+
 	public Gedit.Document document
 	{
 		get { return d_document; }
@@ -236,11 +238,32 @@ public class Document : Object
 			filename = "gca-unsaved-XXXXXX";
 		}
 
-		FileIOStream stream;
-		File f;
+		var cdir = Environment.get_user_cache_dir();
+		var tmpdir = Path.build_filename(cdir, "gedit", "plugins", "codeassistance");
+		var f = File.new_for_path(tmpdir);
 
-		f = File.new_tmp(filename, out stream);
-		var ostream = stream.output_stream;
+		try
+		{
+			f.make_directory_with_parents();
+		}
+		catch (IOError e)
+		{
+			if (!(e is IOError.EXISTS))
+			{
+				throw e;
+			}
+		}
+
+		if (s_needs_tmp_chmod)
+		{
+			FileUtils.chmod(tmpdir, 0700);
+			s_needs_tmp_chmod = false;
+		}
+
+		var tmpfilename = Path.build_filename(tmpdir, filename);
+		var tmpfile = FileUtils.mkstemp(tmpfilename);
+
+		var ostream = new UnixOutputStream(tmpfile, true);
 
 		try
 		{
@@ -262,7 +285,7 @@ public class Document : Object
 		}
 
 		ostream.close();
-		d_unsaved_file = f;
+		d_unsaved_file = File.new_for_path(tmpfilename);
 
 		return d_unsaved_file.get_path();
 	}
