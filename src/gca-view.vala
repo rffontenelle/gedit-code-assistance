@@ -41,6 +41,7 @@ class View : Object
 	private RemoteService[] d_services;
 
 	public signal void changed();
+	public signal void path_changed(string? prevpath);
 
 	public View(Gedit.View view)
 	{
@@ -108,6 +109,7 @@ class View : Object
 
 		buf.notify["language"].disconnect(on_notify_language);
 		d_document.changed.disconnect(on_document_changed);
+		d_document.path_changed.disconnect(on_document_path_changed);
 
 		unregister_backend();
 
@@ -130,7 +132,14 @@ class View : Object
 		buf.notify["language"].connect(on_notify_language);
 
 		d_document.changed.connect(on_document_changed);
+		d_document.path_changed.connect(on_document_path_changed);
+
 		update_backend();
+	}
+
+	private void on_document_path_changed(string? prevpath)
+	{
+		path_changed(prevpath);
 	}
 
 	private void on_document_changed()

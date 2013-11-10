@@ -25,8 +25,7 @@ enum RemoteServices
 {
 	DIAGNOSTICS,
 	SEMANTIC_VALUES,
-	SYMBOLS,
-	MULTI_DOC;
+	SYMBOLS;
 
 	public static RemoteServices parse(string s)
 	{
@@ -38,14 +37,11 @@ enum RemoteServices
 			return RemoteServices.SEMANTIC_VALUES;
 		case "org.gnome.CodeAssist.Symbols":
 			return RemoteServices.SYMBOLS;
-		case "org.gnome.CodeAssist.MultiDoc":
-			return RemoteServices.MULTI_DOC;
 		}
 
 		return 0;
 	}
 }
-
 
 class RemoteDocument
 {

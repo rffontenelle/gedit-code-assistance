@@ -20,10 +20,16 @@
 namespace Gca.DBus
 {
 
-public struct UnsavedDocument
+public struct OpenDocument
 {
 	public string path;
 	public string data_path;
+}
+
+public struct RemoteDocument
+{
+	public string path;
+	public ObjectPath remote_path;
 }
 
 public struct SourceLocation
@@ -54,18 +60,34 @@ public struct Diagnostic
 	public string message;
 }
 
+[DBus(name = "org.freedesktop.DBus.Introspectable")]
+interface Introspectable : Object
+{
+	public abstract async string Introspect() throws DBusError;
+}
+
 [DBus(name = "org.gnome.CodeAssist.Service")]
 interface Service : Object
 {
 	public abstract async ObjectPath parse(string                     path,
 	                                       int64                      cursor,
-	                                       UnsavedDocument[]          unsaved,
+	                                       string                     data_path,
 	                                       HashTable<string, Variant> options) throws DBusError;
 
 	public abstract async void dispose(string path) throws DBusError;
 
-	public abstract async string[] supported_services() throws DBusError;
 }
+
+[DBus(name = "org.gnome.CodeAssist.Project")]
+interface Project : Object
+{
+	public abstract async RemoteDocument[]
+	parse_all(string                     path,
+	          int64                      cursor,
+	          OpenDocument[]             documents,
+	          HashTable<string, Variant> options) throws DBusError;
+}
+
 
 [DBus(name = "org.gnome.CodeAssist.Document")]
 interface Document : Object

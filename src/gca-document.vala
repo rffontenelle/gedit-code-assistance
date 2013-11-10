@@ -31,10 +31,11 @@ public class Document : Object
 	private string? d_text;
 	private File? d_location;
 	private bool d_dispose_ran;
+	private string? d_path;
 
 	private File? d_unsaved_file;
 
-	public signal void location_changed(File? previous_location);
+	public signal void path_changed(string? previous_path);
 	public signal void changed();
 
 	private static bool s_needs_tmp_chmod = true;
@@ -57,9 +58,11 @@ public class Document : Object
 		d_document.modified_changed.connect(on_document_modified_changed);
 		d_document.end_user_action.connect(on_document_end_user_action);
 		d_document.notify["location"].connect(on_location_changed);
+		d_document.notify["shortname"].connect(on_shortname_changed);
 		d_document.saved.connect(on_document_saved);
 
 		d_location = null;
+		d_path = null;
 
 		update_location();
 	}
@@ -72,6 +75,7 @@ public class Document : Object
 
 			d_document.modified_changed.disconnect(on_document_modified_changed);
 			d_document.notify["location"].disconnect(on_location_changed);
+			d_document.notify["shortname"].disconnect(on_shortname_changed);
 
 			d_document.end_user_action.disconnect(on_document_end_user_action);
 			d_document.saved.disconnect(on_document_saved);
@@ -82,41 +86,31 @@ public class Document : Object
 		base.dispose();
 	}
 
-	private void set_location(File? location)
+	private void update_path()
 	{
-		if (location == d_location)
-		{
-			return;
-		}
+		var npath = path;
 
-		File? prev = d_location;
-		d_location = location;
+		if (npath != d_path)
+		{
+			var prevpath = d_path;
+			d_path = npath;
 
-		if ((prev == null) != (d_location == null))
-		{
-			location_changed(prev);
-		}
-		else if (prev != null && !prev.equal(d_location))
-		{
-			location_changed(prev);
+			path_changed(prevpath);
 		}
 	}
 
 	private void update_location()
 	{
-		if (document.is_untitled())
+		if (document.is_untitled() || !document.is_local())
 		{
-			set_location(null);
-			return;
+			d_location = null;
+		}
+		else
+		{
+			d_location = document.location;
 		}
 
-		if (!document.is_local())
-		{
-			set_location(null);
-			return;
-		}
-
-		set_location(document.location);
+		update_path();
 	}
 
 	private void update_modified()
@@ -268,6 +262,9 @@ public class Document : Object
 		try
 		{
 			yield ostream.write_async(d_text.data);
+
+			uint8[1] b = {'\n'};
+			yield ostream.write_async(b);
 		}
 		catch (IOError e)
 		{
@@ -311,6 +308,11 @@ public class Document : Object
 	private void on_document_saved()
 	{
 		emit_changed();
+	}
+
+	private void on_shortname_changed()
+	{
+		update_path();
 	}
 }
 
