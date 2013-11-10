@@ -101,8 +101,20 @@ class Backend : Object
 		view.path_changed.connect(on_view_path_changed);
 	}
 
+	private new void dispose(string path)
+	{
+		d_service.dispose.begin(path, (obj, res) => {
+			try
+			{
+				d_service.dispose.end(res);
+			} catch {}
+		});
+	}
+
 	public void unregister(View view)
 	{
+		dispose(view.document.path);
+
 		view.changed.disconnect(on_view_changed);
 		view.path_changed.disconnect(on_view_path_changed);
 
@@ -115,6 +127,7 @@ class Backend : Object
 		if (prevpath != null)
 		{
 			d_paths.unset(prevpath);
+			dispose(prevpath);
 		}
 
 		d_paths[view.document.path] = view;
