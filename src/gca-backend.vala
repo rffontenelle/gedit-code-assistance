@@ -31,8 +31,8 @@ class Backend : Object
 
 	public static async Backend create(string language) throws Error
 	{
-		var name = "org.gnome.CodeAssist." + language;
-		var path = "/org/gnome/CodeAssist/" + language;
+		var name = "org.gnome.CodeAssist.v1." + language;
+		var path = "/org/gnome/CodeAssist/v1/" + language;
 
 		var project = yield get_project(name, path);
 		var services = yield get_remote_services(name, path);
@@ -67,7 +67,7 @@ class Backend : Object
 
 		DBus.Project? project = null;
 
-		if (serviceintro.lookup_interface("org.gnome.CodeAssist.Project") != null)
+		if (serviceintro.lookup_interface("org.gnome.CodeAssist.v1.Project") != null)
 		{
 			project = yield Bus.get_proxy<DBus.Project>(BusType.SESSION, name, path);
 		}

@@ -31,11 +31,11 @@ enum RemoteServices
 	{
 		switch (s)
 		{
-		case "org.gnome.CodeAssist.Diagnostics":
+		case "org.gnome.CodeAssist.v1.Diagnostics":
 			return RemoteServices.DIAGNOSTICS;
-		case "org.gnome.CodeAssist.SemanticValues":
+		case "org.gnome.CodeAssist.v1.SemanticValues":
 			return RemoteServices.SEMANTIC_VALUES;
-		case "org.gnome.CodeAssist.Symbols":
+		case "org.gnome.CodeAssist.v1.Symbols":
 			return RemoteServices.SYMBOLS;
 		}
 

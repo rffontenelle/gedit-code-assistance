@@ -66,7 +66,7 @@ interface Introspectable : Object
 	public abstract async string Introspect() throws DBusError;
 }
 
-[DBus(name = "org.gnome.CodeAssist.Service")]
+[DBus(name = "org.gnome.CodeAssist.v1.Service")]
 interface Service : Object
 {
 	public abstract async ObjectPath parse(string                     path,
@@ -78,7 +78,7 @@ interface Service : Object
 
 }
 
-[DBus(name = "org.gnome.CodeAssist.Project")]
+[DBus(name = "org.gnome.CodeAssist.v1.Project")]
 interface Project : Object
 {
 	public abstract async RemoteDocument[]
@@ -89,12 +89,12 @@ interface Project : Object
 }
 
 
-[DBus(name = "org.gnome.CodeAssist.Document")]
+[DBus(name = "org.gnome.CodeAssist.v1.Document")]
 interface Document : Object
 {
 }
 
-[DBus(name = "org.gnome.CodeAssist.Diagnostics")]
+[DBus(name = "org.gnome.CodeAssist.v1.Diagnostics")]
 interface Diagnostics : Object
 {
 	public abstract async Diagnostic[] diagnostics() throws DBusError;
