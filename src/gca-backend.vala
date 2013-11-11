@@ -184,7 +184,12 @@ class Backend : Object
 				data_path = path;
 			}
 
-			d_service.parse.begin(path, cursor, data_path, options, (obj, res) => {
+			var dbuscurs = DBus.SourceLocation() {
+				line = cursor.line,
+				column = cursor.column
+			};
+
+			d_service.parse.begin(path, data_path, dbuscurs, options, (obj, res) => {
 				ObjectPath ret;
 
 				try
@@ -212,7 +217,12 @@ class Backend : Object
 
 			var options = new HashTable<string, Variant>(str_hash, str_equal);
 
-			d_project.parse_all.begin(path, cursor, docs, options, (obj, res) => {
+			var dbuscurs = DBus.SourceLocation() {
+				line = cursor.line,
+				column = cursor.column
+			};
+
+			d_project.parse_all.begin(path, docs, dbuscurs, options, (obj, res) => {
 				DBus.RemoteDocument[] ret;
 
 				try

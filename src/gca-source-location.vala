@@ -22,7 +22,7 @@ using Gtk;
 namespace Gca
 {
 
-struct SourceLocation
+public struct SourceLocation
 {
 //	public File? file;
 	public int line;

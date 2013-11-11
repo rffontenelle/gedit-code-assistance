@@ -179,7 +179,7 @@ public class Document : Object
 		get { return d_modified; }
 	}
 
-	public int64 cursor
+	public SourceLocation cursor
 	{
 		get
 		{
@@ -188,7 +188,10 @@ public class Document : Object
 
 			d_document.get_iter_at_mark(out iter, mark);
 
-			return iter.get_offset();
+			return SourceLocation() {
+				line = iter.get_line() + 1,
+				column = iter.get_line_offset() + 1
+			};
 		}
 	}
 

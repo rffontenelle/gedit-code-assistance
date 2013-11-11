@@ -20,7 +20,7 @@
 namespace Gca
 {
 
-struct SourceRange
+public struct SourceRange
 {
 	public SourceLocation start;
 	public SourceLocation end;

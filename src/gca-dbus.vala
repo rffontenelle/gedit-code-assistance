@@ -70,8 +70,8 @@ interface Introspectable : Object
 interface Service : Object
 {
 	public abstract async ObjectPath parse(string                     path,
-	                                       int64                      cursor,
 	                                       string                     data_path,
+	                                       SourceLocation             cursor,
 	                                       HashTable<string, Variant> options) throws DBusError;
 
 	public abstract async void dispose(string path) throws DBusError;
@@ -83,8 +83,8 @@ interface Project : Object
 {
 	public abstract async RemoteDocument[]
 	parse_all(string                     path,
-	          int64                      cursor,
 	          OpenDocument[]             documents,
+	          SourceLocation             cursor,
 	          HashTable<string, Variant> options) throws DBusError;
 }
 
