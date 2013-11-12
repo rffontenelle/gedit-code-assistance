@@ -65,6 +65,11 @@ public struct SourceRange
 		rets = this.start.get_iter(buffer, out start);
 		rete = this.end.get_iter(buffer, out end);
 
+		if (rete && !end.ends_line())
+		{
+			end.forward_char();
+		}
+
 		return rets && rete;
 	}
 
