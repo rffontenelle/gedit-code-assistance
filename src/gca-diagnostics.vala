@@ -66,11 +66,17 @@ class DiagnosticService : RemoteService, Object
 
 	private void update_proxy()
 	{
-		d_proxy.diagnostics.begin((obj, res) => {
+		var proxy = d_proxy;
+
+		proxy.diagnostics.begin((obj, res) => {
 			try
 			{
-				var ret = d_proxy.diagnostics.end(res);
-				d_diagnostics.update(transform(ret));
+				var ret = proxy.diagnostics.end(res);
+
+				if (proxy == d_proxy)
+				{
+					d_diagnostics.update(transform(ret));
+				}
 			}
 			catch (Error e)
 			{
