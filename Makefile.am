@@ -28,7 +28,6 @@ GITIGNOREFILES =
 GITIGNOREDEPS =
 BUILT_SOURCES =
 DISTCLEANFILES =
-gsettings_SCHEMAS =
 
 geditcodeassistancedatadir = $(GEDIT_DATA_DIR)/codeassistance
 geditcodeassistanceplugindir = $(GEDIT_PLUGIN_DIR)
@@ -36,8 +35,6 @@ geditcodeassistanceplugindir = $(GEDIT_PLUGIN_DIR)
 include data/Makefile.am
 include src/Makefile.am
 include vapi/Makefile.am
-
-@GSETTINGS_RULES@
 
 dist-hook-changelog:
 	@if test -d "$(srcdir)/.git"; \

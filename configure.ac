@@ -76,12 +76,9 @@ AC_SUBST(GEDIT_DATA_DIR)
 AC_SUBST(GEDIT_CFLAGS)
 AC_SUBST(GEDIT_LIBS)
 
-GLIB_GSETTINGS
-
 AC_CONFIG_FILES([
 Makefile
 data/codeassistance.plugin
-data/org.gnome.gedit.plugins.codeassistance.gschema.xml
 ])
 
 AC_OUTPUT

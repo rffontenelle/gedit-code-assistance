@@ -34,7 +34,7 @@ class BackendManager
 		d_settings = null;
 
 		var source = SettingsSchemaSource.get_default();
-		var schema = "org.gnome.gedit.plugins.codeassistance";
+		var schema = "org.gnome.codeassistance";
 
 		if (source.lookup(schema, true) != null)
 		{
