@@ -1,7 +1,7 @@
 AC_PREREQ(2.63.2)
 
 m4_define(gedit_code_assistance_major_version, 0)
-m4_define(gedit_code_assistance_minor_version, 2)
+m4_define(gedit_code_assistance_minor_version, 3)
 m4_define(gedit_code_assistance_micro_version, 0)
 m4_define(gedit_code_assistance_version, gedit_code_assistance_major_version.gedit_code_assistance_minor_version.gedit_code_assistance_micro_version)
 

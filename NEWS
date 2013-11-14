@@ -1,4 +1,14 @@
 ===========================
+gedit-code-assistance 0.3.0
+===========================
+
+This release issues a major change in how gedit-code-assistance works. The
+code-assistance backends have been refactored as out-of-process dbus services
+in a new project called gnome-code-assistance. The gedit-code-assistance project
+now uses gnome-code-assistance services to provide code assistance for gedit
+as a plugin.
+
+===========================
 gedit-code-assistance 0.2.0
 ===========================
 
