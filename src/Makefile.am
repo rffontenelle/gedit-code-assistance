@@ -31,19 +31,15 @@ gedit_plugin_vala_sources =					\
 gedit_plugin_libcodeassistance_NOINSTHFILES =			\
 	src/gca-utils-c.h
 
-BUILT_SOURCES +=						\
-	src/libcodeassistance.vapi				\
-	$(srcdir)/src_libcodeassistance_la_vala.stamp
-
 EXTRA_DIST += $(gedit_plugin_libcodeassistance_NOINSTHFILES)
 
 src_libcodeassistance_la_SOURCES =		\
 	$(gedit_plugin_vala_sources)				\
 	src/gca-utils-c.c
 
-src_libcodeassistance_la_VALAFLAGS =		\
+src_libcodeassistance_la_VALAFLAGS =				\
 	--vapidir $(builddir)/vapi				\
-	--vapi src/libcodeassistance.vapi			\
+	--vapi src/libcodeassistance-internal.vapi		\
 	--library libcodeassistance				\
 	--pkg gio-unix-2.0					\
 	--pkg gee-0.8						\
@@ -53,6 +49,8 @@ src_libcodeassistance_la_VALAFLAGS =		\
 	--target-glib=2.36					\
 	--thread
 
+noinst_DATA = src/libcodeassistance-internal.vapi
+
 if ENABLE_DEBUG
 src_libcodeassistance_la_VALAFLAGS += --debug
 endif
@@ -60,13 +58,13 @@ endif
 src_libcodeassistance_la_CFLAGS = $(GEDIT_CFLAGS) -I$(top_srcdir) -w
 src_libcodeassistance_la_LDFLAGS = -module -shared -avoid-version $(GEDIT_LIBS)
 
-CLEANFILES += 							\
-	$(gedit_plugin_vala_sources:.vala=.c)			\
-	src_libcodeassistance_la_vala.stamp
+CLEANFILES +=							\
+	$(gedit_plugin_vala_sources:.vala=.c) 			\
+	$(srcdir)/src_libcodeassistance_la_vala.stamp
 
 GITIGNOREFILES +=						\
-	src/libcodeassistance.vapi				\
 	src/$(DEPDIR)						\
+	src/libcodeassistance-internal.vapi			\
 	src/*.lo						\
 	src/*.o							\
 	src/.libs						\
