@@ -4,6 +4,7 @@ gedit_plugin_vala_sources =					\
 	src/gca-plugin.vala					\
 	src/gca-app-activatable.vala				\
 	src/gca-view-activatable.vala				\
+	src/gca-window-activatable.vala				\
 	src/gca-source-location.vala				\
 	src/gca-source-range.vala				\
 	src/gca-source-range-support.vala			\

@@ -1,7 +1,7 @@
 /*
  * This file is part of gedit-code-assistant.
  *
- * Copyright (C) 2011 - Jesse van den Kieboom
+ * Copyright (C) 2013 - Jesse van den Kieboom
  *
  * gedit-code-assistant is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,24 +22,32 @@ using Gtk;
 namespace Gca
 {
 
-class ViewActivatable : GLib.Object, Gedit.ViewActivatable
+class WindowActivatable : GLib.Object, Gedit.WindowActivatable
 {
-	public Gedit.View view { construct; owned get; }
-
-	private Gca.View d_view;
+	public Gedit.Window window { construct; owned get; }
 
 	public void activate()
 	{
-		d_view = new Gca.View(view);
-		view.set_data("GcaView", d_view);
+		window.active_tab_changed.connect(on_active_tab_changed);
 	}
 
 	public void deactivate()
 	{
-		view.set_data("GcaView", null);
+		window.active_tab_changed.disconnect(on_active_tab_changed);
+	}
 
-		d_view.deactivate();
-		d_view = null;
+	public void update_state()
+	{
+	}
+
+	private void on_active_tab_changed(Gedit.Window window, Gedit.Tab tab)
+	{
+		var v = tab.get_view().get_data<View?>("GcaView");
+
+		if (v != null)
+		{
+			v.reparse();
+		}
 	}
 }
 

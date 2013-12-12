@@ -142,10 +142,8 @@ class View : Object
 		path_changed(prevpath);
 	}
 
-	private void on_document_changed()
+	public void reparse()
 	{
-		d_scrollbar_marker.max_line = d_document.document.get_line_count();
-
 		if (d_timeout != 0)
 		{
 			Source.remove(d_timeout);
@@ -156,6 +154,13 @@ class View : Object
 			changed();
 			return false;
 		});
+	}
+
+	private void on_document_changed()
+	{
+		d_scrollbar_marker.max_line = d_document.document.get_line_count();
+		reparse();
+
 	}
 
 	private void update_backend()
