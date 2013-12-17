@@ -1,3 +1,8 @@
+@define-color warning_bg_color #fcaf3e;
+@define-color error_bg_color #ef2929;
+@define-color info_bg_color #d2dbe6;
+@define-color message_fg_color white;
+
 GcaDiagnosticMessage
 {
   border-width: 0px;
@@ -5,7 +10,7 @@ GcaDiagnosticMessage
 }
 
 GcaDiagnosticMessage GtkLabel {
-  color: @infobar_fg_color;
+  color: @message_fg_color;
 }
 
 GcaDiagnosticMessage.warning
