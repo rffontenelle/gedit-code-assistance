@@ -46,7 +46,7 @@ class WindowActivatable : GLib.Object, Gedit.WindowActivatable
 
 		if (v != null)
 		{
-			v.reparse();
+			v.reparse_now();
 		}
 	}
 }
