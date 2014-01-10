@@ -280,8 +280,16 @@ class DiagnosticMessage : EventBox
 		int ymin;
 		int ymax;
 
-		d_view.buffer_to_window_coords(TextWindowType.TEXT, 0, y.min, null, out ymin);
-		d_view.buffer_to_window_coords(TextWindowType.TEXT, 0, y.max, null, out ymax);
+		if (Gtk.check_version(3, 11, 0) == null)
+		{
+			ymin = y.min;
+			ymax = y.max;
+		}
+		else
+		{
+			d_view.buffer_to_window_coords(TextWindowType.TEXT, 0, y.min, null, out ymin);
+			d_view.buffer_to_window_coords(TextWindowType.TEXT, 0, y.max, null, out ymax);
+		}
 
 		var window = d_view.get_window(TextWindowType.TEXT);
 		int aligny;
@@ -307,8 +315,16 @@ class DiagnosticMessage : EventBox
 		int xmin;
 		int xmax;
 
-		d_view.buffer_to_window_coords(TextWindowType.TEXT, xrange.min, 0, out xmin, null);
-		d_view.buffer_to_window_coords(TextWindowType.TEXT, xrange.max, 0, out xmax, null);
+		if (Gtk.check_version(3, 11, 0) == null)
+		{
+			xmin = xrange.min;
+			xmax = xrange.max;
+		}
+		else
+		{
+			d_view.buffer_to_window_coords(TextWindowType.TEXT, xrange.min, 0, out xmin, null);
+			d_view.buffer_to_window_coords(TextWindowType.TEXT, xrange.max, 0, out xmax, null);
+		}
 
 		int xc;
 		int width;
