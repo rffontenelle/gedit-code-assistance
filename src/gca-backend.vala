@@ -94,7 +94,11 @@ class Backend : Object
 
 	public void register(View view)
 	{
-		d_views.add(view);
+		lock(d_views)
+		{
+			d_views.add(view);
+		}
+
 		d_paths[view.document.path] = view;
 
 		view.changed.connect(on_view_changed);
@@ -118,7 +122,11 @@ class Backend : Object
 		view.changed.disconnect(on_view_changed);
 		view.path_changed.disconnect(on_view_path_changed);
 
-		d_views.remove(view);
+		lock (d_views)
+		{
+			d_views.remove(view);
+		}
+
 		d_paths.unset(view.document.path);
 	}
 
@@ -154,11 +162,25 @@ class Backend : Object
 
 	private async DBus.OpenDocument[] open_documents(View primary)
 	{
-		var ret = new DBus.OpenDocument[d_views.size];
+		View[] views;
+
+		lock(d_views)
+		{
+			views = d_views.to_array();
+		}
+
+		var ret = new DBus.OpenDocument[views.length];
 		ret.length = 0;
 
-		foreach (var v in d_views)
+		foreach (var v in views)
 		{
+			if (v.document == null)
+			{
+				// This happens when a document has been closed while we're
+				// iterating over open views.
+				continue;
+			}
+
 			var dp = yield unsaved_document(v);
 
 			ret += DBus.OpenDocument(){
