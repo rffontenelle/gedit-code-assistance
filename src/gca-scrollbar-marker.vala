@@ -53,7 +53,7 @@ class ScrollbarMarker
 		}
 	}
 
-	private unowned Scrollbar? d_scrollbar;
+	private Scrollbar? d_scrollbar;
 	private HashMap<uint, LinkedList<Marker>> d_markers;
 	private int d_spacing;
 	private int d_maxline;
