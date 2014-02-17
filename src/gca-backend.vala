@@ -174,7 +174,8 @@ class Backend : Object
 
 		foreach (var v in views)
 		{
-			if (v.document == null)
+			var doc = v.document;
+			if (doc == null)
 			{
 				// This happens when a document has been closed while we're
 				// iterating over open views.
@@ -183,8 +184,8 @@ class Backend : Object
 
 			var dp = yield unsaved_document(v);
 
-			ret += DBus.OpenDocument(){
-				path = v.document.path,
+			ret += DBus.OpenDocument() {
+				path = doc.path,
 				data_path = (dp == null ? "" : dp)
 			};
 		}
