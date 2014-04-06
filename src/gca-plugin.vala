@@ -18,7 +18,7 @@
  */
 
 //[ModuleInit]
-public static void peas_register_types(TypeModule module)
+internal void peas_register_types(TypeModule module)
 {
 	Peas.ObjectModule mod = module as Peas.ObjectModule;
 

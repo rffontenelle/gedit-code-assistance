@@ -27,7 +27,8 @@ gedit_plugin_vala_sources =					\
 	src/gca-diagnostic-message.vala				\
 	src/gca-dbus.vala					\
 	src/gca-remote-service.vala				\
-	src/gca-log.vala
+	src/gca-log.vala					\
+	src/gca-indent-backend.vala
 
 gedit_plugin_libcodeassistance_NOINSTHFILES =			\
 	src/gca-utils-c.h
@@ -40,17 +41,18 @@ src_libcodeassistance_la_SOURCES =		\
 
 src_libcodeassistance_la_VALAFLAGS =				\
 	--vapidir $(builddir)/vapi				\
-	--vapi src/libcodeassistance-internal.vapi		\
+	--header src/gca.h					\
+	--vapi src/gca.vapi					\
 	--library libcodeassistance				\
 	--pkg gio-unix-2.0					\
 	--pkg gee-0.8						\
 	--pkg gca-utils						\
 	--pkg gedit						\
 	--pkg libpeas-1.0					\
+	--pkg gobject-introspection-1.0				\
+	--pkg config						\
 	--target-glib=2.36					\
 	--thread
-
-noinst_DATA = src/libcodeassistance-internal.vapi
 
 if ENABLE_DEBUG
 src_libcodeassistance_la_VALAFLAGS += --debug
@@ -59,13 +61,20 @@ endif
 src_libcodeassistance_la_CFLAGS = $(GEDIT_CFLAGS) -I$(top_srcdir) -w
 src_libcodeassistance_la_LDFLAGS = -module -shared -avoid-version $(GEDIT_LIBS)
 
+vapidir = $(datadir)/vala/vapi
+dist_vapi_DATA = 	\
+	src/gca.vapi
+
+gcahdir = $(prefix)/include/gedit-$(GEDIT_API_VERSION)/gca
+gcah_HEADERS = src/gca.h
+
 CLEANFILES +=							\
 	$(gedit_plugin_vala_sources:.vala=.c) 			\
 	$(srcdir)/src_libcodeassistance_la_vala.stamp
 
 GITIGNOREFILES +=						\
 	src/$(DEPDIR)						\
-	src/libcodeassistance-internal.vapi			\
+	src/gca.vapi			\
 	src/*.lo						\
 	src/*.o							\
 	src/.libs						\

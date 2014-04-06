@@ -1,0 +1,11 @@
+[Plugin]
+Module=gcaindentbackendc
+IAge=3
+Name=Code Assistance C Indent Backend
+Hidden=yes
+Builtin=yes
+Description=Code assistance indent backend for C
+Authors=Ignacio Casal Quinteiro <icq@gnome.org>
+Copyright=Copyright © 2014 Ignacio Casal Quinteiro
+Website=http://www.gedit.org
+X-Languages=c

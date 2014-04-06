@@ -35,6 +35,7 @@ class View : Object
 	private unowned Gedit.View d_view;
 	private Document d_document;
 	private Backend d_backend;
+	private IndentBackend d_indent_backend;
 	private ScrollbarMarker? d_scrollbar_marker;
 	private uint d_timeout;
 
@@ -48,6 +49,7 @@ class View : Object
 		d_view = view;
 
 		d_view.notify["buffer"].connect(on_notify_buffer);
+		d_view.event_after.connect(on_event_after);
 
 		connect_document(d_view.buffer as Gedit.Document);
 
@@ -81,6 +83,7 @@ class View : Object
 	public void deactivate()
 	{
 		d_view.notify["buffer"].disconnect(on_notify_buffer);
+		d_view.event_after.disconnect(on_event_after);
 
 		disconnect_document();
 
@@ -111,7 +114,7 @@ class View : Object
 		d_document.changed.disconnect(on_document_changed);
 		d_document.path_changed.disconnect(on_document_path_changed);
 
-		unregister_backend();
+		unregister_backends();
 
 		d_document = null;
 	}
@@ -134,7 +137,7 @@ class View : Object
 		d_document.changed.connect(on_document_changed);
 		d_document.path_changed.connect(on_document_path_changed);
 
-		update_backend();
+		update_backends();
 	}
 
 	private void on_document_path_changed(string? prevpath)
@@ -173,9 +176,9 @@ class View : Object
 		reparse();
 	}
 
-	private void update_backend()
+	private void update_backends()
 	{
-		unregister_backend();
+		unregister_backends();
 
 		/* Update the backend according to the current language on the buffer */
 		if (d_document != null && d_document.document.language != null)
@@ -186,23 +189,32 @@ class View : Object
 				var backend = manager.backend.end(res);
 				register_backend(backend);
 			});
+
+			manager.indent_backend.begin(d_document.document.language.id, (obj, res) => {
+				var backend = manager.indent_backend.end(res);
+				register_indent_backend(backend);
+			});
 		}
 	}
 
-	private void unregister_backend()
+	private void unregister_backends()
 	{
-		if (d_backend == null)
+		if (d_backend != null)
 		{
-			return;
+			foreach (var service in d_services)
+			{
+				service.destroy();
+			}
+
+			d_backend.unregister(this);
+			d_backend = null;
 		}
 
-		foreach (var service in d_services)
+		if (d_indent_backend != null)
 		{
-			service.destroy();
+			d_indent_backend.unregister_backend();
+			d_indent_backend = null;
 		}
-
-		d_backend.unregister(this);
-		d_backend = null;
 	}
 
 	private void register_backend(Backend? backend)
@@ -218,6 +230,18 @@ class View : Object
 		on_document_changed();
 	}
 
+	private void register_indent_backend(IndentBackend? backend)
+	{
+		d_indent_backend = backend;
+
+		if (d_indent_backend == null)
+		{
+			return;
+		}
+
+		d_indent_backend.register_backend(d_view);
+	}
+
 	private void on_notify_buffer()
 	{
 		disconnect_document();
@@ -226,7 +250,159 @@ class View : Object
 
 	private void on_notify_language()
 	{
-		update_backend();
+		update_backends();
+	}
+
+	private unichar get_introduced_char(Gtk.TextBuffer buf, ref Gtk.TextIter cur)
+	{
+		unichar c = 0;
+
+		var start = cur;
+
+		if (start.backward_char())
+		{
+			c = start.get_char();
+		}
+
+		cur = start;
+
+		return c;
+	}
+
+	private bool is_whitespaces(Gtk.TextBuffer buf, Gtk.TextIter cur)
+	{
+		// Check the first char is not space
+		if (cur.get_line_offset() == 0)
+		{
+			return true;
+		}
+
+		bool check = true;
+		var start = cur;
+
+		start.set_line_offset(0);
+		var c = start.get_char();
+
+		while (start.compare(cur) < 0)
+		{
+			if (!c.isspace())
+			{
+				check = false;
+				break;
+			}
+		
+			if (!start.forward_char())
+			{
+				check = false;
+				break;
+			}
+
+			c = start.get_char();
+		}
+	
+		return check;
+	}
+
+	private string get_indent_string_from_indent_level(uint level)
+	{
+		string indent = "";
+
+		if (d_view.insert_spaces_instead_of_tabs)
+		{
+			indent = string.nfill(level, ' ');
+		}
+		else
+		{
+			var indent_width = d_indent_backend.get_indent_width(d_view);
+			uint tabs = level / indent_width;
+			uint spaces = level % indent_width;
+
+			indent = string.nfill(tabs, '\t').concat(string.nfill(spaces, ' '));
+		}
+
+		return indent;
+	}
+
+	private void on_event_after(Gtk.Widget widget, Gdk.Event event)
+	{
+		if (d_document == null ||
+		    d_indent_backend == null ||
+		    event.type != Gdk.EventType.KEY_PRESS ||
+		    (event.key.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.MOD1_MASK)) != 0)
+		{
+			return;
+		}
+
+		var buf = d_document.document;
+		var insert = buf.get_insert();
+
+		Gtk.TextIter cur;
+		buf.get_iter_at_mark(out cur, insert);
+
+		bool indent = false;
+
+		if (event.key.keyval == Gdk.Key.Return || event.key.keyval == Gdk.Key.KP_Enter)
+		{
+			indent = true;
+		}
+		else
+		{
+			/* NOTE: for the future we could make the triggers real regexes
+			 * although this way worked for vim so it may as well work for us
+			 */
+			var copy = cur;
+			var introduced_char = get_introduced_char(buf, ref copy);
+
+			foreach (var trigger in d_indent_backend.get_triggers())
+			{
+				// get the last char to validate with the key pressed
+				var c = trigger.get_char(trigger.length - 1);
+				if (c != introduced_char || event.key.keyval != Gdk.unicode_to_keyval(c))
+				{
+					continue;
+				}
+
+				if (trigger.get_char(0) == '0' && !is_whitespaces(buf, copy))
+				{
+					break;
+				}
+
+				indent = true;
+				break;
+			}
+		}
+
+		if (indent)
+		{
+			uint indent_level;
+
+			indent_level = d_indent_backend.get_indent(buf, cur);
+
+			print("indent level: %u\n", indent_level);
+
+			var start = cur;
+			start.set_line_offset(0);
+			var end = start;
+
+			var c = end.get_char();
+			while (c.isspace())
+			{
+				if (!end.forward_char() || end.ends_line())
+				{
+					break;
+				}
+
+				c = end.get_char();
+			}
+
+			var indent_string = get_indent_string_from_indent_level(indent_level);
+
+			buf.begin_user_action();
+			buf.delete(ref start, ref end);
+
+			buf.insert(ref start, indent_string, -1);
+			buf.end_user_action();
+		}
 	}
 }
 

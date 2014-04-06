@@ -35,6 +35,7 @@ geditcodeassistanceplugindir = $(GEDIT_PLUGIN_DIR)
 include data/Makefile.am
 include src/Makefile.am
 include vapi/Makefile.am
+include indentbackends/Makefile.am
 
 dist-hook-changelog:
 	@if test -d "$(srcdir)/.git"; \

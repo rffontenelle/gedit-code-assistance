@@ -26,6 +26,19 @@ class BackendManager
 	private Gee.HashMap<string, Backend?> d_backends;
 	private Gee.HashMap<string, string> d_language_mapping;
 	private Settings? d_settings;
+	private Gee.HashMap<string, IndentBackendInfo> d_indent_backends;
+	private Peas.Engine d_engine;
+
+	class IndentBackendInfo : Object
+	{
+		public IndentBackend ?backend { get; set; }
+		public Peas.PluginInfo info { get; set; }
+
+		public IndentBackendInfo(Peas.PluginInfo info)
+		{
+			Object(info: info);
+		}
+	}
 
 	private BackendManager()
 	{
@@ -48,6 +61,52 @@ class BackendManager
 			d_settings.changed["language-mapping"].connect(() => {
 				update_language_mapping();
 			});
+		}
+
+		d_indent_backends = new Gee.HashMap<string, IndentBackendInfo>();
+
+		d_engine = new Peas.Engine();
+
+		d_engine.add_search_path(Gca.Config.GCA_INDENT_BACKENDS_DIR,
+		                         Gca.Config.GCA_INDENT_BACKENDS_DATA_DIR);
+
+		d_engine.enable_loader("python3");
+
+		// require the gca gir
+		string tpdir = Path.build_filename(Gca.Config.GCA_LIBS_DIR,
+		                                   "girepository-1.0");
+
+		var repo = GI.Repository.get_default();
+
+		try
+		{
+			repo.require_private(tpdir, "Gca", "3.0", 0);
+		}
+		catch (Error error)
+		{
+			warning("Could not load Gca typelib: %s", error.message);
+		}
+
+		register_backends();
+	}
+
+	private void register_backends()
+	{
+		foreach (Peas.PluginInfo info in d_engine.get_plugin_list())
+		{
+			string? langs = info.get_external_data("Languages");
+
+			if (langs == null)
+			{
+				continue;
+			}
+
+			IndentBackendInfo binfo = new IndentBackendInfo(info);
+
+			foreach (string lang in langs.split(","))
+			{
+				d_indent_backends[lang] = binfo;
+			}
 		}
 	}
 
@@ -110,6 +169,24 @@ class BackendManager
 
 		d_backends[lang] = backend;
 		return backend;
+	}
+
+	public async IndentBackend? indent_backend(string language)
+	{
+		if (!d_indent_backends.has_key(language))
+		{
+			return null;
+		}
+
+		IndentBackendInfo info = d_indent_backends[language];
+
+		if (info.backend == null)
+		{
+			d_engine.load_plugin(info.info);
+			info.backend = (Gca.IndentBackend)d_engine.create_extension(info.info, typeof(Gca.IndentBackend));
+		}
+
+		return info.backend;
 	}
 
 	public static BackendManager instance
