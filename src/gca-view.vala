@@ -387,7 +387,7 @@ class View : Object
 			var c = end.get_char();
 			while (c.isspace())
 			{
-				if (!end.forward_char() || end.ends_line())
+				if (end.ends_line() || !end.forward_char())
 				{
 					break;
 				}
