@@ -124,6 +124,13 @@ class Backend : Object, Gca.IndentBackend
 			return 0;
 		}
 
+		// are we a comment?
+		if (document.iter_has_context_class(iter, "comment"))
+		{
+			// FIXME: leave it as it is for now :)
+			return get_line_indents(d_view, iter);
+		}
+
 		// move to the beginning to get some context from previous lines
 		iter.set_line_offset(0);
 
