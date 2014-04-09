@@ -190,6 +190,22 @@ class Backend : Object, Gca.IndentBackend
 			amount = get_line_indents(iter);
 			amount += get_indent_width();
 		}
+		else if (c == ',')
+		{
+			// hello(param1,|
+			var copy = iter;
+			// FIXME: if we are in an enum we might go out of it and endup with
+			// a wrong indentation here
+			if (find_open_char(ref copy, '(', ')', true))
+			{
+				// if we found it we want to align to the position of the first parameter
+				amount = get_amount_indents_from_position(copy) + 1;
+			}
+			else
+			{
+				amount = get_line_indents(iter);
+			}
+		}
 
 		if (get_first_char_in_line(place) == '}')
 		{
