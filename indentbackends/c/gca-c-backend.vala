@@ -190,6 +190,10 @@ class Backend : Object, Gca.IndentBackend
 			amount = get_line_indents(iter);
 			amount += get_indent_width();
 		}
+		else if (c == '}')
+		{
+			amount = get_line_indents(iter);
+		}
 		else if (c == ',')
 		{
 			// hello(param1,|
