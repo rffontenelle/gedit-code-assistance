@@ -49,7 +49,7 @@ class View : Object
 		d_view = view;
 
 		d_view.notify["buffer"].connect(on_notify_buffer);
-		d_view.event_after.connect(on_event_after);
+		d_view.event_after.connect_after(on_event_after);
 
 		connect_document(d_view.buffer as Gedit.Document);
 
