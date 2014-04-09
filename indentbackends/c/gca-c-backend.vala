@@ -22,16 +22,11 @@ namespace Gca.C
 
 class Backend : Object, Gca.IndentBackend
 {
-	private unowned Gedit.View d_view;
+	private Gedit.View d_view;
 
-	void register_backend(Gedit.View view)
-	{
-		d_view = view;
-	}
-
-	void unregister_backend()
-	{
-		d_view = null;
+	public Gedit.View view {
+		get { return d_view; }
+		construct set { d_view = value; }
 	}
 
 	string[] get_triggers()
@@ -128,7 +123,7 @@ class Backend : Object, Gca.IndentBackend
 		if (document.iter_has_context_class(iter, "comment"))
 		{
 			// FIXME: leave it as it is for now :)
-			return get_line_indents(d_view, iter);
+			return get_line_indents(iter);
 		}
 
 		// move to the beginning to get some context from previous lines
@@ -148,7 +143,7 @@ class Backend : Object, Gca.IndentBackend
 			else
 			{
 				// align with the start of the comment
-				amount = get_line_indents(d_view, iter);
+				amount = get_line_indents(iter);
 			}
 		}
 
@@ -163,18 +158,18 @@ class Backend : Object, Gca.IndentBackend
 			{
 				if (find_open_char(ref copy, '(', ')', false))
 				{
-					amount = get_line_indents(d_view, copy);
+					amount = get_line_indents(copy);
 				}
 				else
 				{
 					// fallback to try to use the current place
-					amount = get_line_indents(d_view, iter);
+					amount = get_line_indents(iter);
 				}
 			}
 			else
 			{
 				// hello;
-				amount = get_line_indents(d_view, iter);
+				amount = get_line_indents(iter);
 			}
 		}
 		else if (c == ')')
@@ -182,18 +177,18 @@ class Backend : Object, Gca.IndentBackend
 			var copy = iter;
 			if (find_open_char(ref copy, '(', ')', false))
 			{
-				amount = get_line_indents(d_view, copy);
+				amount = get_line_indents(copy);
 
 				if (get_first_char_in_line(place) != '{')
 				{
-					amount += get_indent_width(d_view);
+					amount += get_indent_width();
 				}
 			}
 		}
 		else if (c == '{')
 		{
-			amount = get_line_indents(d_view, iter);
-			amount += get_indent_width(d_view);
+			amount = get_line_indents(iter);
+			amount += get_indent_width();
 		}
 
 		if (get_first_char_in_line(place) == '}')
@@ -206,7 +201,7 @@ class Backend : Object, Gca.IndentBackend
 
 			if (find_open_char(ref copy, '{', '}', true))
 			{
-				amount = get_line_indents(d_view, copy);
+				amount = get_line_indents(copy);
 			}
 		}
 		else if (get_first_char_in_line(place) == '#')

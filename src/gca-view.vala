@@ -190,10 +190,11 @@ class View : Object
 				register_backend(backend);
 			});
 
-			manager.indent_backend.begin(d_document.document.language.id, (obj, res) => {
-				var backend = manager.indent_backend.end(res);
-				register_indent_backend(backend);
-			});
+			BackendManager.IndentBackendInfo? info = manager.indent_backend_info(d_document.document.language.id);
+			if (info != null)
+			{
+				d_indent_backend = (Gca.IndentBackend)Peas.Engine.get_default().create_extension(info.info, typeof(IndentBackend), "view", d_view);
+			}
 		}
 	}
 
@@ -210,11 +211,7 @@ class View : Object
 			d_backend = null;
 		}
 
-		if (d_indent_backend != null)
-		{
-			d_indent_backend.unregister_backend();
-			d_indent_backend = null;
-		}
+		d_indent_backend = null;
 	}
 
 	private void register_backend(Backend? backend)
@@ -228,18 +225,6 @@ class View : Object
 
 		backend.register(this);
 		on_document_changed();
-	}
-
-	private void register_indent_backend(IndentBackend? backend)
-	{
-		d_indent_backend = backend;
-
-		if (d_indent_backend == null)
-		{
-			return;
-		}
-
-		d_indent_backend.register_backend(d_view);
 	}
 
 	private void on_notify_buffer()
@@ -313,7 +298,7 @@ class View : Object
 		}
 		else
 		{
-			var indent_width = d_indent_backend.get_indent_width(d_view);
+			var indent_width = d_indent_backend.get_indent_width();
 			uint tabs = level / indent_width;
 			uint spaces = level % indent_width;
 

@@ -22,20 +22,19 @@ namespace Gca
 
 public interface IndentBackend : Object
 {
-	public abstract void register_backend(Gedit.View view);
-	public abstract void unregister_backend();
+	public abstract Gedit.View view { get; construct set; }
 
 	/* These are the chars that trigger an extra indentation, i.e { */
 	public abstract string[] get_triggers();
 	/* It returns the indentation level */
 	public abstract uint get_indent(Gedit.Document document, Gtk.TextIter place);
 
-	public uint get_indent_width(Gedit.View view)
+	public uint get_indent_width()
 	{
 		return view.indent_width < 0 ? view.tab_width : view.indent_width;
 	}
 
-	public uint get_line_indents(Gedit.View view, Gtk.TextIter place)
+	public uint get_line_indents(Gtk.TextIter place)
 	{
 		var start = place;
 		start.set_line_offset(0);
@@ -52,12 +51,12 @@ public interface IndentBackend : Object
 			c = start.get_char();
 		}
 
-		return get_amount_indents_from_position(view, start);
+		return get_amount_indents_from_position(start);
 	}
 
-	public uint get_amount_indents_from_position(Gedit.View view, Gtk.TextIter place)
+	public uint get_amount_indents_from_position(Gtk.TextIter place)
 	{
-		var indent_width = get_indent_width(view);
+		var indent_width = get_indent_width();
 
 		var start = place;
 		start.set_line_offset(0);

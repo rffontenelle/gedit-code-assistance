@@ -29,9 +29,8 @@ class BackendManager
 	private Gee.HashMap<string, IndentBackendInfo> d_indent_backends;
 	private Peas.Engine d_engine;
 
-	class IndentBackendInfo : Object
+	public class IndentBackendInfo : Object
 	{
-		public IndentBackend ?backend { get; set; }
 		public Peas.PluginInfo info { get; set; }
 
 		public IndentBackendInfo(Peas.PluginInfo info)
@@ -70,23 +69,6 @@ class BackendManager
 		d_engine.add_search_path(Gca.Config.GCA_INDENT_BACKENDS_DIR,
 		                         Gca.Config.GCA_INDENT_BACKENDS_DATA_DIR);
 
-		d_engine.enable_loader("python3");
-
-		// require the gca gir
-		string tpdir = Path.build_filename(Gca.Config.GCA_LIBS_DIR,
-		                                   "girepository-1.0");
-
-		var repo = GI.Repository.get_default();
-
-		try
-		{
-			repo.require_private(tpdir, "Gca", "3.0", 0);
-		}
-		catch (Error error)
-		{
-			warning("Could not load Gca typelib: %s", error.message);
-		}
-
 		register_backends();
 	}
 
@@ -101,6 +83,7 @@ class BackendManager
 				continue;
 			}
 
+			d_engine.load_plugin(info);
 			IndentBackendInfo binfo = new IndentBackendInfo(info);
 
 			foreach (string lang in langs.split(","))
@@ -171,22 +154,14 @@ class BackendManager
 		return backend;
 	}
 
-	public async IndentBackend? indent_backend(string language)
+	public IndentBackendInfo? indent_backend_info(string language)
 	{
 		if (!d_indent_backends.has_key(language))
 		{
 			return null;
 		}
 
-		IndentBackendInfo info = d_indent_backends[language];
-
-		if (info.backend == null)
-		{
-			d_engine.load_plugin(info.info);
-			info.backend = (Gca.IndentBackend)d_engine.create_extension(info.info, typeof(Gca.IndentBackend));
-		}
-
-		return info.backend;
+		return d_indent_backends[language];
 	}
 
 	public static BackendManager instance
