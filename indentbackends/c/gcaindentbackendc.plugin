@@ -8,4 +8,4 @@ Description=Code assistance indent backend for C
 Authors=Ignacio Casal Quinteiro <icq@gnome.org>
 Copyright=Copyright © 2014 Ignacio Casal Quinteiro
 Website=http://www.gedit.org
-X-Languages=c,cpp,chdr
+X-Languages=c,cpp,chdr,vala
