@@ -313,7 +313,7 @@ class View : Object
 		if (d_document == null ||
 		    d_indent_backend == null ||
 		    event.type != Gdk.EventType.KEY_PRESS ||
-		    (event.key.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.MOD1_MASK)) != 0)
+		    (event.key.state & Gdk.ModifierType.SHIFT_MASK) != 0)
 		{
 			return;
 		}
