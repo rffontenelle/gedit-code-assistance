@@ -382,11 +382,8 @@ class View : Object
 
 			var indent_string = get_indent_string_from_indent_level(indent_level);
 
-			buf.begin_user_action();
 			buf.delete(ref start, ref end);
-
 			buf.insert(ref start, indent_string, -1);
-			buf.end_user_action();
 		}
 	}
 }
