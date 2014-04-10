@@ -312,8 +312,7 @@ class View : Object
 	{
 		if (d_document == null ||
 		    d_indent_backend == null ||
-		    event.type != Gdk.EventType.KEY_PRESS ||
-		    (event.key.state & Gdk.ModifierType.SHIFT_MASK) != 0)
+		    event.type != Gdk.EventType.KEY_PRESS)
 		{
 			return;
 		}
@@ -326,7 +325,8 @@ class View : Object
 
 		bool indent = false;
 
-		if (event.key.keyval == Gdk.Key.Return || event.key.keyval == Gdk.Key.KP_Enter)
+		if ((event.key.keyval == Gdk.Key.Return || event.key.keyval == Gdk.Key.KP_Enter) &&
+		    (event.key.state & Gdk.ModifierType.SHIFT_MASK) == 0)
 		{
 			indent = true;
 		}
