@@ -126,8 +126,12 @@ class Backend : Object, Gca.IndentBackend
 			return get_line_indents(iter);
 		}
 
-		// move to the beginning to get some context from previous lines
+		// move to the end of the previous line to get some context from previous lines
 		iter.set_line_offset(0);
+		if (!iter.backward_char())
+		{
+			return 0;
+		}
 
 		if (!move_to_no_space(ref iter, false))
 		{
