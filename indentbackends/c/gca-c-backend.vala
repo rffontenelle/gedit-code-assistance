@@ -161,14 +161,11 @@ class Backend : Object, Gca.IndentBackend
 
 	IndentLevel get_indent(Gedit.Document document, Gtk.TextIter place)
 	{
-		var amount = IndentLevel() {
-			indent = 0,
-			alignment = 0
-		};
-
+		// Copy indents by default
+		var amount = get_line_indents(place);
 		var iter = place;
 
-		// if we are in the first line then 0 is fine
+		// if we are in the first line then do nothing
 		if (iter.get_line() == 0)
 		{
 			return amount;
@@ -178,11 +175,12 @@ class Backend : Object, Gca.IndentBackend
 		if (document.iter_has_context_class(iter, "comment"))
 		{
 			// FIXME: leave it as it is for now :)
-			return get_line_indents(iter);
+			return amount;
 		}
 
 		// move to the end of the previous line to get some context from previous lines
 		iter.set_line_offset(0);
+
 		if (!iter.backward_char())
 		{
 			return amount;
@@ -198,11 +196,6 @@ class Backend : Object, Gca.IndentBackend
 			if (!document.iter_backward_to_context_class_toggle(ref iter, "comment"))
 			{
 				return amount;
-			}
-			else
-			{
-				// align with the start of the comment
-				amount = get_line_indents(iter);
 			}
 		}
 
