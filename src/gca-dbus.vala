@@ -72,6 +72,7 @@ interface Service : Object
 	public abstract async ObjectPath parse(string                     path,
 	                                       string                     data_path,
 	                                       SourceLocation             cursor,
+	                                       string                     context,
 	                                       HashTable<string, Variant> options) throws DBusError;
 
 	public abstract async void dispose(string path) throws DBusError;
@@ -85,6 +86,7 @@ interface Project : Object
 	parse_all(string                     path,
 	          OpenDocument[]             documents,
 	          SourceLocation             cursor,
+	          string                     context,
 	          HashTable<string, Variant> options) throws DBusError;
 }
 
