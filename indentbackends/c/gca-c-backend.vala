@@ -130,16 +130,33 @@ class Backend : Object, Gca.IndentBackend
 		return c;
 	}
 
-	bool iter_is_at_break(Gtk.TextIter iter)
+	string get_word_at_iter(Gtk.TextIter iter)
 	{
-		var copy = iter;
-
-		if (!copy.backward_word_start())
+		if (!iter.ends_word())
 		{
-			return false;
+			return "";
 		}
 
-		return copy.get_text(iter) == "break";
+		var start = iter;
+
+		if (!start.starts_word())
+		{
+			if (!start.backward_word_start())
+			{
+				return "";
+			}
+		}
+		return start.get_text(iter);
+	}
+
+	bool iter_is_at_else(Gtk.TextIter iter)
+	{
+		return get_word_at_iter(iter) == "else";
+	}
+
+	bool iter_is_at_break(Gtk.TextIter iter)
+	{
+		return get_word_at_iter(iter) == "break";
 	}
 
 	IndentLevel get_indent(Gedit.Document document, Gtk.TextIter place)
@@ -283,6 +300,20 @@ class Backend : Object, Gca.IndentBackend
 			}
 
 			break;
+		case 'e':
+		{
+			var cp = iter;
+			if (cp.forward_char() && iter_is_at_else(cp))
+			{
+				amount = get_line_indents(iter);
+
+				if (get_first_char_in_line(place) != '{')
+				{
+					amount.indent += get_indent_width();
+				}
+			}
+			break;
+		}
 		}
 
 		if (get_first_char_in_line(place) == '}')
