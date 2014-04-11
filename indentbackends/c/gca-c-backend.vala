@@ -108,15 +108,19 @@ class Backend : Object, Gca.IndentBackend
 		return c;
 	}
 
-	uint get_indent(Gedit.Document document, Gtk.TextIter place)
+	IndentLevel get_indent(Gedit.Document document, Gtk.TextIter place)
 	{
-		uint amount = 0;
+		var amount = IndentLevel() {
+			indent = 0,
+			alignment = 0
+		};
+
 		var iter = place;
 
 		// if we are in the first line then 0 is fine
 		if (iter.get_line() == 0)
 		{
-			return 0;
+			return amount;
 		}
 
 		// are we a comment?
@@ -130,19 +134,19 @@ class Backend : Object, Gca.IndentBackend
 		iter.set_line_offset(0);
 		if (!iter.backward_char())
 		{
-			return 0;
+			return amount;
 		}
 
 		if (!move_to_no_space(ref iter, false))
 		{
-			return 0;
+			return amount;
 		}
 
 		if (document.iter_has_context_class(iter, "comment"))
 		{
 			if (!document.iter_backward_to_context_class_toggle(ref iter, "comment"))
 			{
-				return 0;
+				return amount;
 			}
 			else
 			{
@@ -185,14 +189,14 @@ class Backend : Object, Gca.IndentBackend
 
 				if (get_first_char_in_line(place) != '{')
 				{
-					amount += get_indent_width();
+					amount.indent += get_indent_width();
 				}
 			}
 		}
 		else if (c == '{')
 		{
 			amount = get_line_indents(iter);
-			amount += get_indent_width();
+			amount.indent += get_indent_width();
 		}
 		else if (c == '}')
 		{
@@ -207,7 +211,8 @@ class Backend : Object, Gca.IndentBackend
 			if (find_open_char(ref copy, '(', ')', true))
 			{
 				// if we found it we want to align to the position of the first parameter
-				amount = get_amount_indents_from_position(copy) + 1;
+				amount = get_amount_indents_from_position(copy);
+				amount.alignment += 1;
 			}
 			else
 			{
@@ -230,7 +235,10 @@ class Backend : Object, Gca.IndentBackend
 		}
 		else if (get_first_char_in_line(place) == '#')
 		{
-			amount = 0;
+			amount = IndentLevel() {
+				indent = 0,
+				alignment = 0
+			};
 		}
 
 		return amount;

@@ -288,22 +288,24 @@ class View : Object
 		return check;
 	}
 
-	private string get_indent_string_from_indent_level(uint level)
+	private string get_indent_string_from_indent_level(IndentLevel level)
 	{
 		string indent = "";
 
 		if (d_view.insert_spaces_instead_of_tabs)
 		{
-			indent = string.nfill(level, ' ');
+			indent = string.nfill(level.indent, ' ');
 		}
 		else
 		{
 			var indent_width = d_indent_backend.get_indent_width();
-			uint tabs = level / indent_width;
-			uint spaces = level % indent_width;
+			uint tabs = level.indent / indent_width;
+			uint spaces = level.indent % indent_width;
 
 			indent = string.nfill(tabs, '\t').concat(string.nfill(spaces, ' '));
 		}
+
+		indent += string.nfill(level.alignment, ' ');
 
 		return indent;
 	}
@@ -359,11 +361,9 @@ class View : Object
 
 		if (indent)
 		{
-			uint indent_level;
+			var indent_level = d_indent_backend.get_indent(buf, cur);
 
-			indent_level = d_indent_backend.get_indent(buf, cur);
-
-			print("indent level: %u\n", indent_level);
+			print("indent level: (%u, %u)\n", indent_level.indent, indent_level.alignment);
 
 			var start = cur;
 			start.set_line_offset(0);

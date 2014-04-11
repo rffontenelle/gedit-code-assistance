@@ -20,21 +20,28 @@
 namespace Gca
 {
 
+public struct IndentLevel
+{
+	uint indent;
+	uint alignment;
+}
+
 public interface IndentBackend : Object
 {
 	public abstract Gedit.View view { get; construct set; }
 
 	/* These are the chars that trigger an extra indentation, i.e { */
 	public abstract string[] get_triggers();
+
 	/* It returns the indentation level */
-	public abstract uint get_indent(Gedit.Document document, Gtk.TextIter place);
+	public abstract IndentLevel get_indent(Gedit.Document document, Gtk.TextIter place);
 
 	public uint get_indent_width()
 	{
 		return view.indent_width < 0 ? view.tab_width : view.indent_width;
 	}
 
-	public uint get_line_indents(Gtk.TextIter place)
+	protected IndentLevel get_line_indents(Gtk.TextIter place)
 	{
 		var start = place;
 		start.set_line_offset(0);
@@ -54,7 +61,7 @@ public interface IndentBackend : Object
 		return get_amount_indents_from_position(start);
 	}
 
-	public uint get_amount_indents_from_position(Gtk.TextIter place)
+	protected IndentLevel get_amount_indents_from_position(Gtk.TextIter place)
 	{
 		var indent_width = get_indent_width();
 
@@ -62,26 +69,37 @@ public interface IndentBackend : Object
 		start.set_line_offset(0);
 
 		int rest = 0;
-		uint amount = 0;
 		var c = start.get_char();
+		bool seen_space = false;
+
+		var ret = IndentLevel() {
+			indent = 0,
+			alignment = 0
+		};
+
 		while (start.compare(place) < 0)
 		{
 			if (c == '\t')
 			{
-				if (rest != 0)
+				if (!seen_space)
+				{
+					ret.indent += indent_width;
+				}
+				else
 				{
 					rest = 0;
+					ret.alignment += indent_width;
 				}
-				amount += indent_width;
 			}
 			else
 			{
+				seen_space = true;
 				rest++;
 			}
 
 			if (rest == indent_width)
 			{
-				amount += indent_width;
+				ret.alignment += indent_width;
 				rest = 0;
 			}
 
@@ -93,7 +111,8 @@ public interface IndentBackend : Object
 			c = start.get_char();
 		}
 
-		return amount + rest;
+		ret.alignment += rest;
+		return ret;
 	}
 }
 
