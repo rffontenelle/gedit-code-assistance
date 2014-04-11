@@ -108,6 +108,40 @@ class Backend : Object, Gca.IndentBackend
 		return c;
 	}
 
+	unichar get_last_char_in_line(Gtk.TextIter place)
+	{
+		if (!place.ends_line())
+		{
+			place.forward_to_line_end();
+		}
+
+		unichar c = place.get_char();
+
+		while (c.isspace() && !place.starts_line())
+		{
+			if (!place.backward_char())
+			{
+				break;
+			}
+
+			c = place.get_char();
+		}
+
+		return c;
+	}
+
+	bool iter_is_at_break(Gtk.TextIter iter)
+	{
+		var copy = iter;
+
+		if (!copy.backward_word_start())
+		{
+			return false;
+		}
+
+		return copy.get_text(iter) == "break";
+	}
+
 	IndentLevel get_indent(Gedit.Document document, Gtk.TextIter place)
 	{
 		var amount = IndentLevel() {
@@ -157,7 +191,9 @@ class Backend : Object, Gca.IndentBackend
 
 		var c = iter.get_char();
 
-		if (c == ';')
+		switch (c)
+		{
+		case ';':
 		{
 			// hello(param1,
 			//       param2);
@@ -174,13 +210,29 @@ class Backend : Object, Gca.IndentBackend
 					amount = get_line_indents(iter);
 				}
 			}
+			else if (iter_is_at_break(iter) && get_last_char_in_line(place) == ':')
+			{
+				amount = get_line_indents(iter);
+				var iw = get_indent_width();
+
+				if (amount.indent > iw)
+				{
+					amount.indent -= iw;
+				}
+				else
+				{
+					amount.indent = 0;
+				}
+			}
 			else
 			{
 				// hello;
 				amount = get_line_indents(iter);
 			}
+
+			break;
 		}
-		else if (c == ')')
+		case ')':
 		{
 			var copy = iter;
 			if (find_open_char(ref copy, '(', ')', false))
@@ -192,17 +244,17 @@ class Backend : Object, Gca.IndentBackend
 					amount.indent += get_indent_width();
 				}
 			}
+
+			break;
 		}
-		else if (c == '{')
-		{
+		case '{':
 			amount = get_line_indents(iter);
 			amount.indent += get_indent_width();
-		}
-		else if (c == '}')
-		{
+			break;
+		case '}':
 			amount = get_line_indents(iter);
-		}
-		else if (c == ',')
+			break;
+		case ',':
 		{
 			// hello(param1,|
 			var copy = iter;
@@ -218,6 +270,19 @@ class Backend : Object, Gca.IndentBackend
 			{
 				amount = get_line_indents(iter);
 			}
+
+			break;
+		}
+		case ':':
+			amount = get_line_indents(iter);
+
+			if (get_first_char_in_line(place) != '{' &&
+			    get_last_char_in_line(place) != ':')
+			{
+				amount.indent += get_indent_width();
+			}
+
+			break;
 		}
 
 		if (get_first_char_in_line(place) == '}')
