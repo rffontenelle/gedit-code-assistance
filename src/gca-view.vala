@@ -363,7 +363,7 @@ class View : Object
 		{
 			var indent_level = d_indent_backend.get_indent(buf, cur);
 
-			print("indent level: (%u, %u)\n", indent_level.indent, indent_level.alignment);
+			Log.debug("Indent level: (%u, %u)", indent_level.indent, indent_level.alignment);
 
 			var start = cur;
 			start.set_line_offset(0);
