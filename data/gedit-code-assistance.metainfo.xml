@@ -2,7 +2,7 @@
 <!-- Copyright 2014 Richard Hughes <richard@hughsie.com> -->
 <component type="addon">
   <id>gedit-code-assistance</id>
-  <extends>gedit.desktop</extends>
+  <extends>org.gnome.gedit.desktop</extends>
   <name>Code Assistance</name>
   <summary>Assistance when writing code</summary>
   <url type="homepage">https://wiki.gnome.org/Projects/CodeAssistance</url>
