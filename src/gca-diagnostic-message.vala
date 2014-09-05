@@ -377,8 +377,9 @@ class DiagnosticMessage : EventBox
 	                                             out int natural_height)
 	{
 		int minwidth;
+		int natwidth;
 
-		get_preferred_width(out minwidth, null);
+		get_preferred_width(out minwidth, out natwidth);
 		get_preferred_height_for_width(minwidth, out minimum_height, out natural_height);
 	}
 
