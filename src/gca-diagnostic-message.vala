@@ -347,12 +347,13 @@ class DiagnosticMessage : EventBox
 			d_view.add_child_in_window(this, TextWindowType.TEXT, 0, 0);
 		}
 
+		int natwidth;
 		int minwidth;
-		base.get_preferred_width(null, out minwidth);
+		base.get_preferred_width(out minwidth, out natwidth);
 
-		if (minwidth < width)
+		if (natwidth < width)
 		{
-			width = minwidth;
+			width = natwidth;
 		}
 
 		int natural_height;
