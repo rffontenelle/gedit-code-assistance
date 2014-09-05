@@ -107,7 +107,7 @@ public class Document : Object
 		}
 		else
 		{
-			d_location = document.location;
+			d_location = document.get_location();
 		}
 
 		update_path();
