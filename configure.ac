@@ -59,6 +59,16 @@ AC_SUBST(GEDIT_GIR_DIR)
 GEDIT_API_VERSION=3.0
 AC_SUBST(GEDIT_API_VERSION)
 
+PKG_CHECK_EXISTS([
+	gtksourceview-3.0 >= 3.13.90
+], [
+	EXTRA_VAPI_DIRS=
+], [
+	EXTRA_VAPI_DIRS="--vapidir \"\$(top_srcdir)/vapi-gtksourceview\""
+])
+
+AC_SUBST(EXTRA_VAPI_DIRS)
+
 if test "x$enable_local" = "xyes"; then
 	geditlibdir="$HOME/.local/share"
 	geditdatadir="$HOME/.local/share"

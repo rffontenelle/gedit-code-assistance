@@ -1,5 +1,4 @@
 EXTRA_DIST += 					\
-	vapi/gca-utils.vapi			\
-	vapi/gtksourceview-3.0.vapi
+	vapi/gca-utils.vapi
 
 GITIGNOREDEPS += vapi/Makefile.am

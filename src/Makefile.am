@@ -40,7 +40,8 @@ src_libcodeassistance_la_SOURCES =		\
 	src/gca-utils-c.c
 
 src_libcodeassistance_la_VALAFLAGS =				\
-	--vapidir $(builddir)/vapi				\
+	--vapidir $(top_srcdir)/vapi				\
+	$(EXTRA_VAPI_DIRS)					\
 	--header src/gca.h					\
 	--vapi src/gca.vapi					\
 	--library libcodeassistance				\
