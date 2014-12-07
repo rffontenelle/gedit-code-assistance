@@ -1,3 +1,10 @@
+============================
+gedit-code-assistance 3.14.0
+============================
+Added smart indentation
+Fix newline deletion bug
+Fix crash in diagnostics
+
 ===========================
 gedit-code-assistance 0.3.1
 ===========================
