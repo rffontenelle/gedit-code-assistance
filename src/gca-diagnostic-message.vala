@@ -112,14 +112,6 @@ class DiagnosticMessage : EventBox
 		d_vbox = new Box(Orientation.VERTICAL, 1);
 		d_vbox.show();
 
-		var ctx = d_view.get_style_context();
-		ctx.save();
-
-		ctx.add_class(STYLE_CLASS_VIEW);
-		//var color = ctx.get_color(StateFlags.NORMAL);
-
-		ctx.restore();
-
 		bool ismixed = mixed_severity;
 
 		foreach (Diagnostic d in d_diagnostics)
@@ -140,8 +132,6 @@ class DiagnosticMessage : EventBox
 			label.set_margin_right(6);
 
 			label.show();
-
-			//label.override_color(StateFlags.NORMAL, color);
 
 			label.halign = Align.START;
 			label.valign = Align.CENTER;
