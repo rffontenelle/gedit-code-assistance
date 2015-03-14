@@ -4,8 +4,10 @@ indentbackends_c_libgcaindentbackendc_la_SOURCES =			\
 	indentbackends/c/gca-c-backend.vala
 
 indentbackends_c_libgcaindentbackendc_la_CFLAGS = $(GEDIT_CFLAGS) -I$(top_srcdir)/src
-indentbackends_c_libgcaindentbackendc_la_LIBADD = $(GEDIT_LIBS)
-indentbackends_c_libgcaindentbackendc_la_LDFLAGS = -module -avoid-version
+indentbackends_c_libgcaindentbackendc_la_LIBADD =		\
+	$(top_builddir)/src/libcodeassistance.la		\
+	$(GEDIT_LIBS)
+indentbackends_c_libgcaindentbackendc_la_LDFLAGS = -module -avoid-version -no-undefined
 
 indentbackends_c_libgcaindentbackendc_la_VALAFLAGS =		\
 	--vapidir $(builddir)/vapi				\
