@@ -197,8 +197,16 @@ class Backend : Object
 	{
 		unsaved_document.begin(view, (obj, res) => {
 			var data_path = unsaved_document.end(res);
-			var path = view.document.path;
-			var cursor = view.document.cursor;
+
+			var doc = view.document;
+			if (doc == null) {
+				// This happens when a document has been closed while we're
+				// getting the unsaved document
+				return;
+			}
+
+			var path = doc.path;
+			var cursor = doc.cursor;
 
 			var options = new HashTable<string, Variant>(str_hash, str_equal);
 
@@ -235,8 +243,15 @@ class Backend : Object
 		open_documents.begin(view, (obj, res) => {
 			var docs = open_documents.end(res);
 
-			var path = view.document.path;
-			var cursor = view.document.cursor;
+			var doc = view.document;
+			if (doc == null) {
+				// This happens when a document has been closed while we're
+				// opening the documents
+				return;
+			}
+
+			var path = doc.path;
+			var cursor = doc.cursor;
 
 			var options = new HashTable<string, Variant>(str_hash, str_equal);
 
