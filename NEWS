@@ -1,4 +1,9 @@
 ============================
+gedit-code-assistance 3.14.3
+============================
+Fix crash at exit when closing several documents
+
+============================
 gedit-code-assistance 3.14.2
 ============================
 Fix problem loading indent backends with new libpeas
