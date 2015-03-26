@@ -430,7 +430,7 @@ class DiagnosticMessage : EventBox
 		ctx.render_background(context, 0, 0, alloc.width, alloc.height);
 		ctx.render_frame(context, 0, 0, alloc.width, alloc.height);
 
-		ctx.save();
+		ctx.restore();
 
 		base.draw(context);
 
