@@ -56,7 +56,7 @@ src_libcodeassistance_la_VALAFLAGS =				\
 	--thread
 
 if ENABLE_DEBUG
-src_libcodeassistance_la_VALAFLAGS += --debug
+src_libcodeassistance_la_VALAFLAGS += -g
 endif
 
 src_libcodeassistance_la_CFLAGS = $(GEDIT_CFLAGS) -I$(top_srcdir) -w
