@@ -271,7 +271,7 @@ class Diagnostics : Object
 		{
 			var attr = new Gtk.SourceMarkAttributes();
 
-			attr.set_gicon(new ThemedIcon.with_default_fallbacks(icon_name_for_severity(sev)));
+			attr.set_icon_name(icon_name_for_severity(sev));
 			attr.query_tooltip_markup.connect(on_diagnostic_tooltip);
 
 			d_view.view.set_mark_attributes(mark_category_for_severity(sev), attr, 0);
