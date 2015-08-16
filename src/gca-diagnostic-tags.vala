@@ -67,8 +67,8 @@ class DiagnosticTags : Object
 	{
 		ensure_tag(ref tag, name);
 
-		tag.background_rgba = col;
-		tag.background_full_height = true;
+		tag.underline = Pango.Underline.ERROR;
+		tag.underline_rgba = col;
 	}
 
 	private void update_tags()
