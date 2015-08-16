@@ -33,17 +33,17 @@ class DiagnosticColors
 		d_errorColor = update_color(context,
 		             "error_bg_color",
 		             {1, 0, 0, 1},
-		             0.5);
+		             1);
 
 		d_warningColor = update_color(context,
 		             "warning_bg_color",
 		             {1, 0.5, 0, 1},
-		             0.5);
+		             1);
 
 		d_infoColor = update_color(context,
 		             "info_bg_color",
 		             {0, 0, 1, 1},
-		             0.5);
+		             1);
 	}
 
 	private Gdk.RGBA mix_colors(Gdk.RGBA source, Gdk.RGBA dest)
@@ -88,17 +88,17 @@ class DiagnosticColors
 		d_errorColor = mix_colors(update_color(ctx,
 		                                       "error_bg_color",
 		                                       {1, 0, 0, 1},
-		                                       0.5), dest);
+		                                       1), dest);
 
 		d_warningColor = mix_colors(update_color(ctx,
 		                                         "warning_bg_color",
 		                                         {1, 0.5, 0, 1},
-		                                         0.5), dest);
+		                                         1), dest);
 
 		d_infoColor = mix_colors(update_color(ctx,
 		                                      "info_bg_color",
 		                                      {0, 0, 1, 1},
-		                                      0.5), dest);
+		                                      1), dest);
 
 		ctx.restore();
 	}
