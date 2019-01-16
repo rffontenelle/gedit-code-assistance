@@ -1,7 +1,7 @@
 geditcodeassistanceplugin_DATA = data/codeassistance.plugin
 geditcodeassistancedata_DATA = data/codeassistance.css
 
-metainfodir = $(datadir)/appdata
+metainfodir = $(datadir)/metainfo
 metainfo_DATA = data/gedit-code-assistance.metainfo.xml
 
 EXTRA_DIST += \
